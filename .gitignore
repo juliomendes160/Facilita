@@ -1,0 +1,2 @@
+# Ignora a pasta node_modules e todos os seus arquivos e subpastas
+node_modules/

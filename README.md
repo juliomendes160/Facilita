@@ -1,0 +1,106 @@
+# Facilita
+
+## Criar um repositório no GitHub:
+
+Acesse o GitHub e faça login na sua conta.
+No canto superior direito, clique no sinal de "+" e selecione "New repository".
+Escolha um nome para o seu repositório, defina a visibilidade (público ou privado) e adicione uma breve descrição se desejar.
+Clique em "Create repository".
+
+## Configurar o ambiente de desenvolvimento:
+
+Certifique-se de ter o Node.js e o Angular instalados em seu ambiente de desenvolvimento.
+Instale o MongoDB em sua máquina local ou utilize um serviço de banco de dados em nuvem compatível com Node.js e MongoDB, como MongoDB Atlas.
+
+## Configurar o backend:
+
+Crie uma estrutura básica para o backend Node.js, incluindo pastas para rotas, controladores, modelos e serviços.
+Configure o MongoDB para se conectar ao seu banco de dados.
+Implemente as rotas necessárias para manipular os clientes (listagem, criação, atualização, exclusão).
+
+``` bash backend
+# Verifica a versão do Node.js
+node [--version | -v]
+
+# Cria uma pasta chamada "backend" e navega até ela
+mkdir backend
+cd backend
+
+# Inicializa um novo projeto npm com configurações padrão
+npm init -y
+
+# Instala o framework Express.js
+npm install express
+
+# Instala o TypeScript como uma dependência de desenvolvimento
+npm install typescript --save-dev
+
+# Instala o ts-node, que permite executar arquivos TypeScript diretamente
+npm install ts-node --save-dev
+
+# Instala as definições de tipo para o Express.js, necessárias para o TypeScript
+npm install @types/express --save-dev
+
+# Instala TypeScript, ts-node e @types/express simultaneamente
+npm install typescript ts-node @types/express --save-dev
+
+# Inicia o servidor Node.js
+node server.js
+npx ts-node server.ts
+
+# Inicializa o arquivo de configuração TypeScript (tsconfig.json)
+tsc --init
+
+# Compila o arquivo TypeScript para JavaScript 
+tsc server.ts
+
+# Instala dependências de produção e desenvolvimento package.json
+npm install
+
+# Desistalar dependências de produção e desenvolvimento package.json
+npm uninstall --save $(npm ls --parseable --depth=0 | tail -n +2)
+npm uninstall --save-dev $(npm ls --parseable --depth=0 | tail -n +2)
+```
+
+# Configurar o frontend:
+
+Inicie um novo projeto Angular usando o Angular CLI.
+Crie componentes para exibir a lista de clientes e para o formulário de cadastro de novos clientes.
+Configure os serviços para interagir com o backend, consumindo as APIs RESTful definidas.
+
+```bash frontend
+# Verifica a versão do Node.js
+node [--version | -v]
+
+# Verifica a versão do Angular CLI
+ng version
+
+<<<<<<< HEAD
+# Cria uma pasta chamada "backend" e navega até ela
+mkdir frontend
+cd frontend
+
+npm install @angular/cli
+
+npx ng new projeto
+
+cd projeto
+
+=======
+# Cria uma pasta chamada "frontend" e navega até ela
+mkdir frontend
+cd frontend
+
+# Instalar o Angular CLI
+npm install @angular/cli
+
+#Criar um novo projeto Angular
+npx ng new projeto
+
+# Navegar até o diretório do projeto
+cd projeto
+
+# Iniciar o servidor
+>>>>>>> c17d1dc (Ambiente de Desenvolvimento Configurado)
+npx ng serve
+```
