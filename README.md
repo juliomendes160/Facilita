@@ -32,17 +32,23 @@ npm init -y
 # Instala o framework Express.js
 npm install express
 
+npm install cors
+
+npm install mongodb
+
+# Instala as definições de tipo para o Express.js, necessárias para o TypeScript
+npm install @types/express --save-dev
+
+npm install @types/cors --save-dev
+
 # Instala o TypeScript como uma dependência de desenvolvimento
 npm install typescript --save-dev
 
 # Instala o ts-node, que permite executar arquivos TypeScript diretamente
 npm install ts-node --save-dev
 
-# Instala as definições de tipo para o Express.js, necessárias para o TypeScript
-npm install @types/express --save-dev
-
 # Instala TypeScript, ts-node e @types/express simultaneamente
-npm install typescript ts-node @types/express --save-dev
+npm install @types/express @types/cors typescript ts-node --save-dev
 
 # Inicia o servidor Node.js
 node server.js
@@ -75,18 +81,6 @@ node [--version | -v]
 # Verifica a versão do Angular CLI
 ng version
 
-<<<<<<< HEAD
-# Cria uma pasta chamada "backend" e navega até ela
-mkdir frontend
-cd frontend
-
-npm install @angular/cli
-
-npx ng new projeto
-
-cd projeto
-
-=======
 # Cria uma pasta chamada "frontend" e navega até ela
 mkdir frontend
 cd frontend
@@ -101,6 +95,5 @@ npx ng new projeto
 cd projeto
 
 # Iniciar o servidor
->>>>>>> c17d1dc (Ambiente de Desenvolvimento Configurado)
 npx ng serve
 ```

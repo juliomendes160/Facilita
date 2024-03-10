@@ -12,10 +12,10 @@
             "skipFiles": [
                 "<node_internals>/**"
             ],
-            "program": "${file}",
-            "outFiles": [
-                "${workspaceFolder}/**/*.js"
-            ]
+            //"program": "${file}",
+            "program": "${workspaceFolder}\\backend\\node_modules\\ts-node\\dist\\bin.js",
+            //"outFiles": ["${workspaceFolder}/**/*.js"],
+            "args": ["${workspaceFolder}\\backend\\server.ts"],
         }
     ]
 }
