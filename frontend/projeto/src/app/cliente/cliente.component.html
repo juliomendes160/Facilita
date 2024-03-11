@@ -1,0 +1,55 @@
+<form [formGroup]="cliente">
+    <fieldset>
+        <legend>Consultas</legend>
+        <input type="text" formControlName="_id"  placeholder="Id"  (ngModelChange)="filtrar()">
+        <button (click)="listar()" [disabled]="button.listar">{{ buttonText.listar }}</button>
+        <button (click)="consultar()" [disabled]="button.consultar">Consultar</button>
+        <button (click)="rotas()" [disabled]="button.calcular">Calcular Rotas</button>
+        <button (click)="limpar()" [disabled]="button.limpar">Limpar</button>
+    </fieldset>
+    
+    <fieldset>
+        <legend>Cliente</legend>
+        <input type="text" formControlName="nome" placeholder="Nome">
+        <input type="number" formControlName="telefone" placeholder="Telefon">
+        <input type="email" formControlName="email" placeholder="E-mail">
+    </fieldset>
+
+    <fieldset formGroupName="coordenadas">
+        <legend>Coordenadas</legend>
+        <div>
+            <input type="number" formControlName="x" placeholder="Coordenada X">
+            <input type="number" formControlName="y" placeholder="Coordenada Y">
+        </div>
+    </fieldset>
+    
+    <fieldset>
+        <legend>Funções</legend>
+        <button (click)="salvar()" [disabled]="button.salvar">Salvar</button>
+        <button (click)="atualizar()" [disabled]="button.atualizar">Atualizar</button>
+        <button (click)="excluir()" [disabled]="button.excluir">Excluir</button>
+    </fieldset>
+</form>
+
+<table *ngIf="clientes.length" border="1">
+    <thead>
+      <tr>
+        <th>Id</th>
+        <th>Nome</th>
+        <th>Telefone</th>
+        <th>E-mail</th>
+        <th>Coordenada X</th>
+        <th>Coordenada Y</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr *ngFor="let cliente of clientes">
+            <td>{{ cliente._id }}</td>
+            <td>{{ cliente.nome }}</td>
+            <td>{{ cliente.telefone }}</td>
+            <td>{{ cliente.email }}</td>
+            <td>{{ cliente.coordenadas.x }}</td>
+            <td>{{ cliente.coordenadas.y }}</td>
+        </tr>
+    </tbody>
+  </table>

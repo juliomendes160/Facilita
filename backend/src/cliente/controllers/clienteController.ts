@@ -5,9 +5,8 @@ import { Cliente } from '../models/cliente';
 
 export const Salvar = async (req: Request, res: Response) => {
 
-    if(!req.body.nome || !req.body.email ||  !req.body.telefone || !req.body.coordenadasx || !req.body.coordenadasy){
-        res.status(400).json('Operação salvar: campos obrigatórios!');
-        return;
+    if(!req.body.nome || !req.body.email ||  !req.body.telefone || !req.body.coordenadas.x || !req.body.coordenadas.y){
+        return res.status(400).json('Operação salvar: campos obrigatórios!');
     }
 
     const cliente: Cliente = {
@@ -15,8 +14,8 @@ export const Salvar = async (req: Request, res: Response) => {
         email: req.body.email,
         telefone: req.body.telefone,
         coordenadas: {
-            x: req.body.coordenadasx,
-            y: req.body.coordenadasy
+            x: req.body.coordenadas.x,
+            y: req.body.coordenadas.y
         }
     };
 
@@ -37,12 +36,12 @@ export const Listar = async (req: Request, res: Response) => {
 
     const query = {
         $or: [
-            { nome: { $regex: req.query.q, $options: 'i' } },
-            { telefone: { $regex: req.query.q, $options: 'i' } },
-            { email: { $regex: req.query.q, $options: 'i' } },
+            { nome: { $regex: req.query.q.toString(), $options: 'i' } },
+            { telefone: { $regex: req.query.q.toString(), $options: 'i' } },
+            { email: { $regex: req.query.q.toString(), $options: 'i' } },
             { coordenadas: {
-                x: { $regex: req.query.q, $options: 'i' },
-                y: { $regex: req.query.q, $options: 'i' }
+                x: { $regex: req.query.q.toString(), $options: 'i' },
+                y: { $regex:req.query.q.toString(), $options: 'i' }
             } }
         ]
     }    
@@ -51,6 +50,17 @@ export const Listar = async (req: Request, res: Response) => {
         const clientes = await clienteDao.Listar(query);
         if(req.route.stack[0].name!=="Listar"){
             return clientes
+        }
+
+        if( req.query.q!=''){
+            if(clientes.length){
+                res.status(200).json(clientes);
+                return;
+            }
+            else{
+                res.status(200).json("Sucesso ao filtrar: não existe cliente com esse filtro!");
+                return;
+            }
         }
 
         if(clientes.length){
@@ -97,7 +107,7 @@ export const Atualizar = async(req: Request, res: Response) => {
         return;
     }
 
-    if(!req.body.nome || !req.body.email ||  !req.body.telefone || !req.body.coordenadasx || !req.body.coordenadasy){
+    if(!req.body.nome || !req.body.email ||  !req.body.telefone || !req.body.coordenadas.x || !req.body.coordenadas.y){
         res.status(400).json('Operação salvar: campos obrigatórios!');
         return;
     }
@@ -109,8 +119,8 @@ export const Atualizar = async(req: Request, res: Response) => {
         email: req.body.email,
         telefone: req.body.telefone,
         coordenadas: {
-            x: req.body.coordenadasx,
-            y: req.body.coordenadasy
+            x: req.body.coordenadas.x,
+            y: req.body.coordenadas.y
         }
     };
 
@@ -145,7 +155,7 @@ export const Rotas = async (req: Request, res: Response) => {
     
     try{
         const empresa = { coordenadas: { x: 0, y: 0 } };
-        const rota = [];
+        const rotas = [];
         const clientes = await Listar(req, res);
     
         while (clientes!.length > 0) {
@@ -163,13 +173,13 @@ export const Rotas = async (req: Request, res: Response) => {
                 }
             });
     
-            rota.push(clienteMaisProximo);
+            rotas.push(clienteMaisProximo);
             empresa.coordenadas = clienteMaisProximo!.coordenadas;
             clientes!.splice(clienteMaisProximoIndex!, 1);
         }
     
-        if(rota.length > 0){
-            res.status(200).json(rota);
+        if(rotas.length){
+            res.status(200).json(rotas);
         }
         else{
             res.status(200).json("Sucesso ao calcular rotas: não existe cliente cadastrado!");
