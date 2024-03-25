@@ -1,11 +1,11 @@
 <form [formGroup]="cliente">
     <fieldset>
         <legend>Consultas</legend>
-        <input type="text" formControlName="_id"  placeholder="Id"  (ngModelChange)="filtrar()">
-        <button (click)="listar()" [disabled]="button.listar">{{ buttonText.listar }}</button>
-        <button (click)="consultar()" [disabled]="button.consultar">Consultar</button>
-        <button (click)="rotas()" [disabled]="button.calcular">Calcular Rotas</button>
-        <button (click)="limpar()" [disabled]="button.limpar">Limpar</button>
+        <input type="text" formControlName="_id"  placeholder="Id">
+        <button (click)="listar()" [disabled]="validar.listar()">{{ text.listar() }}</button>
+        <button (click)="rotas()" [disabled]="validar.rotas()">Rotas</button>
+        <button (click)="consultar($event)" [disabled]="validar.consultar()">Consultar</button>
+        <button (click)="limpar()" [disabled]="validar.limpar(cliente)">Limpar</button>
     </fieldset>
     
     <fieldset>
@@ -25,9 +25,9 @@
     
     <fieldset>
         <legend>Funções</legend>
-        <button (click)="salvar()" [disabled]="button.salvar">Salvar</button>
-        <button (click)="atualizar()" [disabled]="button.atualizar">Atualizar</button>
-        <button (click)="excluir()" [disabled]="button.excluir">Excluir</button>
+        <button (click)="salvar()" [disabled]="validar.salvar()">Salvar</button>
+        <button (click)="atualizar()" [disabled]="validar.atualizar()">Atualizar</button>
+        <button (click)="excluir()" [disabled]="validar.excluir()">Excluir</button>
     </fieldset>
 </form>
 

@@ -2,7 +2,7 @@ import { Listar } from './../../../../../backend/src/cliente/daos/clienteDao';
 import { CommonModule } from '@angular/common';
 import { HttpClientModule, HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
-import { ReactiveFormsModule, FormGroup, FormBuilder } from '@angular/forms';
+import { ReactiveFormsModule, FormGroup, FormBuilder, Validators } from '@angular/forms';
 
 @Component({
   selector: 'app-cliente',
@@ -11,51 +11,25 @@ import { ReactiveFormsModule, FormGroup, FormBuilder } from '@angular/forms';
   templateUrl: './cliente.component.html',
   styleUrl: './cliente.component.css'
 })
-export class ClienteComponent  {
+export class ClienteComponent {
 
   private readonly router = 'http://localhost:3000/cliente/'
 
   cliente:FormGroup;
 
-  clientes: any[] = [];
-
-  button = {
-    listar: false,
-    consultar: false,
-    calcular: false,
-    salvar: false,
-    limpar: true,
-    atualizar: true,
-    excluir: true,
-  }
-
-  buttonText = {
-    listar: 'Listar',
-    salvar: 'Salvar',
-  }
+  clientes: any [] = [];
 
   constructor(private FormBuilder: FormBuilder, private http: HttpClient) {
     this.cliente = this.FormBuilder.group({
-      _id: [''],
-      nome: [''],
-      telefone: [''],
-      email: [''],
-      coordenadas: this.FormBuilder.group({x: [''],  y: [''],}),
-    });
-  }
-  
-
-  habilitar(disabled: boolean){
-    this.button.listar = disabled;
-    this.button.consultar = disabled;
-    this.button.calcular = disabled;
-    this.button.salvar = disabled;
-  }
-
-  desabilitar(disabled: boolean){
-    this.button.limpar = disabled;
-    this.button.atualizar = disabled;
-    this.button.excluir = disabled;
+      _id: [{value:'', disabled: false},],
+      nome: [{value:'', disabled: false}, Validators.compose([Validators.required])],
+      telefone: [{value:'', disabled: false}, Validators.compose([Validators.required])],
+      email: [{value:'', disabled: false}, Validators.compose([Validators.required])],
+      coordenadas: this.FormBuilder.group({
+        x: [{value:'', disabled: false}, Validators.compose([ Validators.required])],  
+        y: [{value:'', disabled: false}, Validators.compose([ Validators.required])],
+      }),
+    })
   }
   
   salvar() {
@@ -82,8 +56,7 @@ export class ClienteComponent  {
           this.limpar();
           return;
         }
-        this.clientes = response
-        this.button.limpar = false;
+        this.clientes = response;
       },
       error: (response) => {
         alert(response.error);
@@ -92,7 +65,24 @@ export class ClienteComponent  {
     });
   }
 
-  consultar() {
+  rotas(){
+    this.http.get<[]>(`${this.router}rotas`)
+    .subscribe({
+      next: (response) => {
+        if(typeof response === 'string'){
+          alert(response);
+          return;
+        }
+        this.clientes = response
+      },
+      error: (response) => {
+        alert(response.error);
+        console.error(response);
+      }
+    });
+  }
+
+  consultar(event: Event) {
     if(!this.cliente.value._id){
       alert("Operação consultar: id obrigatório!");
       return;
@@ -106,16 +96,16 @@ export class ClienteComponent  {
           return;
         }
         this.cliente.patchValue(response);
-        this.button.limpar = false;
-        this.button.atualizar = false;
-        this.button.excluir = false;
-        this.button.salvar = true;
+        this.cliente.get('_id')?.disable();
+        if(event.target instanceof  HTMLButtonElement){
+          event.target!.disabled=true;
+        }
       },
       error: (response) => {
         alert(response.error);
         console.error(response);
       }
-    });
+    })
   }
 
   atualizar(){
@@ -158,41 +148,47 @@ export class ClienteComponent  {
     });
   }
 
-  rotas(){
-    this.http.get<[]>(`${this.router}rotas`)
-    .subscribe({
-      next: (response) => {
-        if(typeof response === 'string'){
-          alert(response);
-          return;
-        }
-        this.clientes = response
-        this.button.limpar = false;
-      },
-      error: (response) => {
-        alert(response.error);
-        console.error(response);
+  limpar() {
+    this.cliente.reset({
+      _id: {value:'', disabled: false},
+      nome: {value:'', disabled: false},
+      telefone: {value:'', disabled: false},
+      email: {value:'', disabled: false},
+      coordenadas: {
+        x: {value:'', disabled: false},
+        y: {value:'', disabled: false}
       }
     });
-  }
-
-  filtrar(){
-    if(!this.cliente.value._id){
-      this.buttonText.listar = 'Listar';
-    }
-    else{
-      this.buttonText.listar = 'Filtrar';
-    }
-    this.button.limpar = false;
-  }
-
-  limpar() {
-    this.cliente.reset();
     this.clientes = [];
-    this.buttonText.listar = 'Listar';
-    this.cliente.value._id='';
-    this.habilitar(false);
-    this.desabilitar(true);
+  }
+
+  validar = {
+      listar: () => false,
+      rotas: () => false,
+      consultar: () =>  !this.cliente.get('_id')?.value,
+      salvar: () => this.cliente.valid? this.cliente.get('_id')?.disabled : true,
+      atualizar: () => this.cliente.get('_id')?.enabled,
+      excluir: () => this.cliente.get('_id')?.enabled,
+      limpar: (formGroup: FormGroup): boolean  => {
+        if (this.clientes.length){
+          return false;
+        }
+        
+        for (const key in formGroup.controls) {
+          if (formGroup.get(key) instanceof FormGroup) {
+            return this.validar.limpar(formGroup.get(key) as FormGroup);
+          }
+          if (formGroup.get(key)?.value) {
+            return false;
+          }
+        }
+        return true;
+    },
+  }
+
+  text = {
+    listar: () => !this.cliente.value._id? 'Listar': 'Filtrar',
+    salvar: () =>  'Salvar',
   }
 
 }
