@@ -34,10 +34,10 @@ export const Consultar = async (objectId: ObjectId) => {
     }
 }
 
-export const Atualizar = async (objectId: ObjectId, cliente: Cliente) => {
+export const Atualizar = async (cliente: Cliente) => {
     try {
         client.connect();
-        await collection.updateOne({ _id: objectId },{ $set: cliente});
+        await collection.updateOne({ _id: cliente._id },{ $set: cliente});
     } finally {
         await client.close();
     }

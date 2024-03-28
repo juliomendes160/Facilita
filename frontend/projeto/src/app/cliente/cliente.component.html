@@ -4,27 +4,31 @@
         <input type="text" formControlName="_id"  placeholder="Id">
         <button (click)="listar()" [disabled]="validar.listar()">{{ text.listar() }}</button>
         <button (click)="rotas()" [disabled]="validar.rotas()">Rotas</button>
-        <button (click)="consultar($event)" [disabled]="validar.consultar()">Consultar</button>
+        <button (click)="consultar($event)" [disabled]="validar.consultar()" >Consultar</button>
         <button (click)="limpar()" [disabled]="validar.limpar(cliente)">Limpar</button>
     </fieldset>
     
     <fieldset>
         <legend>Cliente</legend>
+        <span class="error" *ngIf="cliente.get('nome')?.errors?.['required'] && cliente.get('nome')?.touched">Campo Obrigatório!</span>
         <input type="text" formControlName="nome" placeholder="Nome">
-        <input type="number" formControlName="telefone" placeholder="Telefon">
+        <span class="error" *ngIf="cliente.get('telefone')?.errors?.['required'] && cliente.get('telefone')?.touched">Campo Obrigatório!</span>
+        <input type="number" formControlName="telefone" placeholder="Telefone">
+        <span class="error" *ngIf="cliente.get('email')?.errors?.['required'] && cliente.get('email')?.touched">Campo Obrigatório!</span>
         <input type="email" formControlName="email" placeholder="E-mail">
     </fieldset>
 
     <fieldset formGroupName="coordenadas">
         <legend>Coordenadas</legend>
         <div>
+            <span class="error" *ngIf="cliente.get('coordenadas.x')?.errors?.['required'] && cliente.get('coordenadas.x')?.touched">Campo Obrigatório!</span>
             <input type="number" formControlName="x" placeholder="Coordenada X">
+            <span class="error" *ngIf="cliente.get('coordenadas.y')?.errors?.['required'] && cliente.get('coordenadas.y')?.touched">Campo Obrigatório!</span>
             <input type="number" formControlName="y" placeholder="Coordenada Y">
         </div>
     </fieldset>
     
     <fieldset>
-        <legend>Funções</legend>
         <button (click)="salvar()" [disabled]="validar.salvar()">Salvar</button>
         <button (click)="atualizar()" [disabled]="validar.atualizar()">Atualizar</button>
         <button (click)="excluir()" [disabled]="validar.excluir()">Excluir</button>

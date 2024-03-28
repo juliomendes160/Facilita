@@ -1,12 +1,10 @@
-import { ObjectId } from "mongodb";
-
 export interface Cliente {
-    _id?: ObjectId;
+    _id?: string;
     nome: string;
+    telefone: number;
     email: string;
-    telefone: string;
     coordenadas: {
         x: number;
         y: number;
-    };
+    }
 }

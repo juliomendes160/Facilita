@@ -102,19 +102,13 @@ export const Consultar = async (req: Request, res: Response) => {
 
 export const Atualizar = async(req: Request, res: Response) => {
 
-    if(!ObjectId.isValid(req.params.id)){
-        res.status(400).json('Operação atualizar: id obrigatório!');
+    if(!ObjectId.isValid(req.body._id) || !req.body.nome || !req.body.email ||  !req.body.telefone || !req.body.coordenadas.x || !req.body.coordenadas.y){
+        res.status(400).json('Operação atualizar: campos obrigatórios!');
         return;
     }
-
-    if(!req.body.nome || !req.body.email ||  !req.body.telefone || !req.body.coordenadas.x || !req.body.coordenadas.y){
-        res.status(400).json('Operação salvar: campos obrigatórios!');
-        return;
-    }
-
-    const objectId = new ObjectId(req.params.id);
     
     const cliente: Cliente = {
+        _id: ObjectId.createFromHexString(req.body._id),
         nome: req.body.nome,
         email: req.body.email,
         telefone: req.body.telefone,
@@ -125,7 +119,7 @@ export const Atualizar = async(req: Request, res: Response) => {
     };
 
     try {
-        await clienteDao.Atualizar(objectId, cliente);
+        await clienteDao.Atualizar(cliente);
         res.status(200).json("Sucesso ao atualizar cliente!");
     } catch (error) {
         console.error('Erro ao atulizar cliente:', error);
