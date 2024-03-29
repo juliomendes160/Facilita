@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams, HttpResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Cliente } from './cliente';
 import { Observable } from 'rxjs/internal/Observable';
@@ -12,27 +12,32 @@ export class ClienteService {
 
   constructor(private http: HttpClient) { }
 
-  salvar(cliente: Cliente): Observable<Cliente>{
-    return this.http.post<Cliente>(this.router, cliente);
-  }
-  
-  listar(): Observable<Cliente[]>{
-    return this.http.get<Cliente[]>(this.router);
+  salvar(cliente: Cliente): Observable<HttpResponse<Cliente>>{
+    return this.http.post<Cliente>(`${this.router}/salvar`, cliente, {observe: 'response' });
   }
 
-  rotas(): Observable<Cliente[]>{
-    return this.http.get<Cliente[]>(`${this.router}/rotas`);
+  listar(): Observable<HttpResponse<Cliente[]>> {
+    return this.http.get<Cliente[]>(`${this.router}/listar`, { observe: 'response' });
   }
 
-  consultar(_id: string): Observable<Cliente>{
-    return this.http.get<Cliente>(`${this.router}/${_id}`);
+  filtrar(q: string): Observable<HttpResponse<Cliente[]>> {
+    let params = new HttpParams().set("q", q);
+    return this.http.get<Cliente[]>(`${this.router}/filtrar`, { params: params, observe: 'response' });
   }
 
-  atualizar(cliente: Cliente): Observable<Cliente>{
-    return this.http.put<Cliente>(this.router, cliente);
+  rotas(): Observable<HttpResponse<Cliente[]>> {
+    return this.http.get<Cliente[]>(`${this.router}/rotas`, { observe: 'response' });
   }
 
-  excluir(_id: string): Observable<Cliente>{
-    return this.http.delete<Cliente>(`${this.router}/${_id}`);
+  consultar(_id: string): Observable<HttpResponse<Cliente>> {
+    return this.http.get<Cliente>(`${this.router}/consultar/${_id}`, { observe: 'response' });
+  }
+
+  atualizar(cliente: Cliente): Observable<HttpResponse<Cliente>>{
+    return this.http.put<Cliente>(`${this.router}/atualizar`, cliente, { observe: 'response' });
+  }
+
+  excluir(_id: string): Observable<HttpResponse<Cliente>> {
+    return this.http.delete<Cliente>(`${this.router}/excluir/${_id}`, { observe: 'response' });
   }
 }

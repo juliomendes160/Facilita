@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { HttpClientModule, HttpClient } from '@angular/common/http';
+import { HttpClientModule,} from '@angular/common/http';
 import { Component } from '@angular/core';
 import { ReactiveFormsModule, FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { ClienteService } from './cliente.service';
@@ -41,12 +41,12 @@ export class ClienteComponent {
     this.service.salvar(this.cliente.getRawValue())
     .subscribe({
       next: (response) => {
-        alert(response);
+        alert(response.body);
         this.limpar();
         this.listar();
       },
       error: (response) => {
-        console.error(response);
+        alert(response.error);
       }
     });
   }
@@ -55,15 +55,32 @@ export class ClienteComponent {
     this.service.listar()
     .subscribe({
       next: (response) => {
-        if(typeof response === 'string'){
-          alert(response);
-          this.limpar();
-          return;
+        if(response.status===204){
+          return alert('Registro inexistente!');
         }
-        this.clientes = response;
+        if(response.body instanceof Object){
+          this.clientes = response.body
+        }
       },
       error: (response) => {
-        console.error(response);
+        alert(response.error);
+      }
+    });
+  }
+
+  filtrar() {
+    this.service.filtrar(this.cliente.get('_id')?.value)
+    .subscribe({
+      next: (response) => {
+        if(response.status===204){
+          return alert('Registro inexistente!');
+        }
+        if(response.body instanceof Object){
+          this.clientes = response.body
+        }
+      },
+      error: (response) => {
+        alert(response.error);
       }
     });
   }
@@ -72,77 +89,62 @@ export class ClienteComponent {
     this.service.rotas()
     .subscribe({
       next: (response) => {
-        if(typeof response === 'string'){
-          alert(response);
-          return;
+        if(response.status===204){
+          return alert('Registro inexistente!');
         }
-        this.clientes = response
+        if(response.body instanceof Object){
+          this.clientes = response.body
+        }
       },
       error: (response) => {
-        console.error(response);
+        alert(response.error);
       }
     });
   }
 
   consultar(event: Event) {
-    if(!this.cliente.get('_id')?.value){
-      alert("Operação consultar: id obrigatório!");
-      return;
-    }
-
     this.service.consultar(this.cliente.get('_id')?.value)
     .subscribe({
       next: async (response) => {
-        if(typeof response === 'string'){
-          alert(response);
-          return;
+        if(response.status===204){
+          return alert('Registro inexistente!');
         }
         this.cliente.get('_id')?.disable();
-        this.cliente.patchValue(response);
-        if(event.target instanceof  HTMLButtonElement){
-          event.target!.disabled=true;
+        this.cliente.patchValue(response.body as Object);
+        if(event.target instanceof HTMLButtonElement){
+          event.target.disabled = true;
         }
       },
       error: (response) => {
-        console.error(response);
+        alert(response.error);
       }
     })
   }
 
   atualizar(){
-    
-    if(!this.cliente.get('_id')?.value){
-      alert("Operação atualizar: id obrigatório!");
-      return;
-    }
-
     this.service.atualizar(this.cliente.getRawValue())
     .subscribe({
       next: (response) => {
+        alert(response.body)
         this.limpar();
         this.listar();
       },
       error: (response) => {
-        console.error(response);
+        alert(response.error);
       }
     });
   }
 
   excluir() {
-    if(!this.cliente.get('_id')?.value){
-      alert("Operação excluir: id obrigatório!");
-      return;
-    }
-
     this.service.excluir(this.cliente.get('_id')?.value)
     .subscribe({
       next: (response) => {
-        alert(response);
+        alert(response.body);
         this.limpar();
         this.listar();
       },
       error: (response) => {
-        console.error(response);
+        alert(response.error);
       }
     });
   }
@@ -161,7 +163,7 @@ export class ClienteComponent {
     this.clientes = [];
   }
 
-  validar = {
+  disabled = {
       listar: () => false,
       rotas: () => false,
       consultar: () =>  !this.cliente.get('_id')?.value,
@@ -175,7 +177,7 @@ export class ClienteComponent {
 
         for (const key in formGroup.controls) {
           if (formGroup.get(key) instanceof FormGroup) {
-            return this.validar.limpar(formGroup.get(key) as FormGroup);
+            return this.disabled.limpar(formGroup.get(key) as FormGroup);
           }
           if (formGroup.get(key)?.value) {
             return false;
@@ -185,9 +187,12 @@ export class ClienteComponent {
     },
   }
 
+  click = {
+    listar: () => !this.cliente.get('_id')?.value? this.listar(): this.filtrar(),
+  }
+
   text = {
     listar: () => !this.cliente.get('_id')?.value? 'Listar': 'Filtrar',
-    salvar: () =>  'Salvar',
   }
 
 }

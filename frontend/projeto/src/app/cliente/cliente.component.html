@@ -2,58 +2,61 @@
     <fieldset>
         <legend>Consultas</legend>
         <input type="text" formControlName="_id"  placeholder="Id">
-        <button (click)="listar()" [disabled]="validar.listar()">{{ text.listar() }}</button>
-        <button (click)="rotas()" [disabled]="validar.rotas()">Rotas</button>
-        <button (click)="consultar($event)" [disabled]="validar.consultar()" >Consultar</button>
-        <button (click)="limpar()" [disabled]="validar.limpar(cliente)">Limpar</button>
+        <button (click)="click.listar()" [disabled]="disabled.listar()">{{ text.listar() }}</button>
+        <button (click)="rotas()" [disabled]="disabled.rotas()">Rotas</button>
+        <button (click)="consultar($event)" [disabled]="disabled.consultar()" >Consultar</button>
+        <button (click)="limpar()" [disabled]="disabled.limpar(cliente)">Limpar</button>
     </fieldset>
     
     <fieldset>
         <legend>Cliente</legend>
-        <span class="error" *ngIf="cliente.get('nome')?.errors?.['required'] && cliente.get('nome')?.touched">Campo Obrigatório!</span>
+        <span class="mensagem__erro" *ngIf="cliente.get('nome')?.errors?.['required'] && cliente.get('nome')?.touched">Campo Obrigatório!</span>
         <input type="text" formControlName="nome" placeholder="Nome">
-        <span class="error" *ngIf="cliente.get('telefone')?.errors?.['required'] && cliente.get('telefone')?.touched">Campo Obrigatório!</span>
+        <span class="mensagem__erro" *ngIf="cliente.get('telefone')?.errors?.['required'] && cliente.get('telefone')?.touched">Campo Obrigatório!</span>
         <input type="number" formControlName="telefone" placeholder="Telefone">
-        <span class="error" *ngIf="cliente.get('email')?.errors?.['required'] && cliente.get('email')?.touched">Campo Obrigatório!</span>
+        <span class="mensagem__erro" *ngIf="cliente.get('email')?.errors?.['required'] && cliente.get('email')?.touched">Campo Obrigatório!</span>
         <input type="email" formControlName="email" placeholder="E-mail">
     </fieldset>
 
     <fieldset formGroupName="coordenadas">
         <legend>Coordenadas</legend>
         <div>
-            <span class="error" *ngIf="cliente.get('coordenadas.x')?.errors?.['required'] && cliente.get('coordenadas.x')?.touched">Campo Obrigatório!</span>
+            <span class="mensagem__erro" *ngIf="cliente.get('coordenadas.x')?.errors?.['required'] && cliente.get('coordenadas.x')?.touched">Campo Obrigatório!</span>
             <input type="number" formControlName="x" placeholder="Coordenada X">
-            <span class="error" *ngIf="cliente.get('coordenadas.y')?.errors?.['required'] && cliente.get('coordenadas.y')?.touched">Campo Obrigatório!</span>
+            <span class="mensagem__erro" *ngIf="cliente.get('coordenadas.y')?.errors?.['required'] && cliente.get('coordenadas.y')?.touched">Campo Obrigatório!</span>
             <input type="number" formControlName="y" placeholder="Coordenada Y">
         </div>
     </fieldset>
     
     <fieldset>
-        <button (click)="salvar()" [disabled]="validar.salvar()">Salvar</button>
-        <button (click)="atualizar()" [disabled]="validar.atualizar()">Atualizar</button>
-        <button (click)="excluir()" [disabled]="validar.excluir()">Excluir</button>
+        <button (click)="salvar()" [disabled]="disabled.salvar()">Salvar</button>
+        <button (click)="atualizar()" [disabled]="disabled.atualizar()">Atualizar</button>
+        <button (click)="excluir()" [disabled]="disabled.excluir()">Excluir</button>
     </fieldset>
 </form>
 
-<table *ngIf="clientes.length" border="1">
-    <thead>
-      <tr>
-        <th>Id</th>
-        <th>Nome</th>
-        <th>Telefone</th>
-        <th>E-mail</th>
-        <th>Coordenada X</th>
-        <th>Coordenada Y</th>
-      </tr>
-    </thead>
-    <tbody>
-        <tr *ngFor="let cliente of clientes">
-            <td>{{ cliente._id }}</td>
-            <td>{{ cliente.nome }}</td>
-            <td>{{ cliente.telefone }}</td>
-            <td>{{ cliente.email }}</td>
-            <td>{{ cliente.coordenadas.x }}</td>
-            <td>{{ cliente.coordenadas.y }}</td>
-        </tr>
-    </tbody>
-  </table>
+<div *ngIf="clientes.length">
+    <table width="100%" border="1">
+        <thead>
+          <tr>
+            <th>Id</th>
+            <th>Nome</th>
+            <th>Telefone</th>
+            <th>E-mail</th>
+            <th>Coordenada X</th>
+            <th>Coordenada Y</th>
+          </tr>
+        </thead>
+        <tbody>
+            <tr *ngFor="let cliente of clientes">
+                <td>{{ cliente._id }}</td>
+                <td>{{ cliente.nome }}</td>
+                <td>{{ cliente.telefone }}</td>
+                <td>{{ cliente.email }}</td>
+                <td>{{ cliente.coordenadas.x }}</td>
+                <td>{{ cliente.coordenadas.y }}</td>
+            </tr>
+        </tbody>
+      </table>
+</div>
+

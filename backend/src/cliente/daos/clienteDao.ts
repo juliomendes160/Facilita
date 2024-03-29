@@ -15,7 +15,17 @@ export const Salvar = async (cliente: Cliente) => {
     }
 }
 
-export const Listar = async (query: object) => {
+export const Listar = async () => {
+
+    try {
+        client.connect();
+        return await collection.find().toArray();
+    } finally {
+        await client.close();
+    }
+}
+
+export const Filtrar = async (query: object) => {
 
     try {
         client.connect();

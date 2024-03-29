@@ -30,44 +30,17 @@ export const Salvar = async (req: Request, res: Response) => {
 
 export const Listar = async (req: Request, res: Response) => {
 
-    if (req.query.q === undefined){
-        req.query.q = '';
-    }
-
-    const query = {
-        $or: [
-            { nome: { $regex: req.query.q.toString(), $options: 'i' } },
-            { telefone: { $regex: req.query.q.toString(), $options: 'i' } },
-            { email: { $regex: req.query.q.toString(), $options: 'i' } },
-            { coordenadas: {
-                x: { $regex: req.query.q.toString(), $options: 'i' },
-                y: { $regex:req.query.q.toString(), $options: 'i' }
-            } }
-        ]
-    }    
-
     try {
-        const clientes = await clienteDao.Listar(query);
+        const clientes = await clienteDao.Listar();
         if(req.route.stack[0].name!=="Listar"){
             return clientes
-        }
-
-        if( req.query.q!=''){
-            if(clientes.length){
-                res.status(200).json(clientes);
-                return;
-            }
-            else{
-                res.status(200).json("Sucesso ao filtrar: não existe cliente com esse filtro!");
-                return;
-            }
         }
 
         if(clientes.length){
             res.status(200).json(clientes);
         }
         else{
-            res.status(200).json("Sucesso ao listar: não existe cliente cadastrado!");
+            res.status(204);
         }
        
     } catch (error) {
@@ -76,72 +49,32 @@ export const Listar = async (req: Request, res: Response) => {
     }
 }
 
-export const Consultar = async (req: Request, res: Response) => {
+export const Filtrar = async (req: Request, res: Response) => {
 
-    if(!ObjectId.isValid(req.params.id)){
-        res.status(400).json('Operação consultar: id obrigatório!');
-        return;
-    }
-
-    const objectId = new ObjectId(req.params.id);
+    const query = {
+        $or: [
+            { nome: { $regex: req.query.q, $options: 'i' } },
+            { telefone: { $regex: req.query.q, $options: 'i' } },
+            { email: { $regex: req.query.q, $options: 'i' } },
+            { coordenadas: {
+                x: { $regex: req.query.q, $options: 'i' },
+                y: { $regex:req.query.q, $options: 'i' }
+            }}
+        ]
+    }    
 
     try {
-        const cliente = await clienteDao.Consultar(objectId);
-        if(cliente){
-            res.status(200).json(cliente);
+        const clientes = await clienteDao.Filtrar(query);
+        if(clientes.length){
+            res.status(200).json(clientes);
         }
         else{
-            res.status(200).json("Sucesso ao consultar: não existe cliente cadastrado!");
+            res.status(204);
         }
-        
+       
     } catch (error) {
-        console.error('Erro ao consultar cliente:', error);
-        res.status(500).send('Erro ao consultar cliente!');
-    }
-}
-
-export const Atualizar = async(req: Request, res: Response) => {
-
-    if(!ObjectId.isValid(req.body._id) || !req.body.nome || !req.body.email ||  !req.body.telefone || !req.body.coordenadas.x || !req.body.coordenadas.y){
-        res.status(400).json('Operação atualizar: campos obrigatórios!');
-        return;
-    }
-    
-    const cliente: Cliente = {
-        _id: ObjectId.createFromHexString(req.body._id),
-        nome: req.body.nome,
-        email: req.body.email,
-        telefone: req.body.telefone,
-        coordenadas: {
-            x: req.body.coordenadas.x,
-            y: req.body.coordenadas.y
-        }
-    };
-
-    try {
-        await clienteDao.Atualizar(cliente);
-        res.status(200).json("Sucesso ao atualizar cliente!");
-    } catch (error) {
-        console.error('Erro ao atulizar cliente:', error);
-        res.status(500).send('Erro ao atulizar cliente!');
-    }
-}
-
-export const Excluir = async (req: Request, res: Response) => {
-    
-    if(!ObjectId.isValid(req.params.id)){
-        res.status(400).json('Operação excluir: id obrigatório!');
-        return;
-    }
-
-    const objectId = new ObjectId(req.params.id);
-
-    try {
-        await clienteDao.Excluir(objectId);
-        res.json("Sucesso ao excluir cliente!");
-    } catch (error) {
-        console.error('Erro ao excluir cliente:', error);
-        res.status(500).send('Erro ao excluir cliente!');
+        console.error('Erro ao filtrar clientes:', error);
+        res.status(500).send('Erro ao filtrar clientes!');
     }
 }
 
@@ -176,11 +109,77 @@ export const Rotas = async (req: Request, res: Response) => {
             res.status(200).json(rotas);
         }
         else{
-            res.status(200).json("Sucesso ao calcular rotas: não existe cliente cadastrado!");
+            res.status(204);
         }
     }
     catch(error){
         console.error('Erro ao calcular rotas:', error);
         res.status(500).send('Erro ao calcular rotas!');
+    }
+}
+
+export const Consultar = async (req: Request, res: Response) => {
+
+    if(!ObjectId.isValid(req.params.id)){
+        return res.status(400).json('Operação consultar: id inválido!');
+    }
+
+    const objectId = new ObjectId(req.params.id);
+
+    try {
+        const cliente = await clienteDao.Consultar(objectId);
+        if(cliente){
+            res.status(200).json(cliente);
+        }
+        else{
+            res.status(204);
+        }
+        
+    } catch (error) {
+        console.error('Erro ao consultar cliente:', error);
+        res.status(500).send('Erro ao consultar cliente!');
+    }
+}
+
+export const Atualizar = async(req: Request, res: Response) => {
+
+    if(!ObjectId.isValid(req.body._id) || !req.body.nome || !req.body.email ||  !req.body.telefone || !req.body.coordenadas.x || !req.body.coordenadas.y){
+        return res.status(400).json('Operação atualizar: campos obrigatórios!');
+    }
+    
+    const cliente: Cliente = {
+        _id: ObjectId.createFromHexString(req.body._id),
+        nome: req.body.nome,
+        email: req.body.email,
+        telefone: req.body.telefone,
+        coordenadas: {
+            x: req.body.coordenadas.x,
+            y: req.body.coordenadas.y
+        }
+    };
+
+    try {
+        await clienteDao.Atualizar(cliente);
+        res.status(200).json("Sucesso ao atualizar cliente!");
+    } catch (error) {
+        console.error('Erro ao atulizar cliente:', error);
+        res.status(500).send('Erro ao atulizar cliente!');
+    }
+}
+
+export const Excluir = async (req: Request, res: Response) => {
+    
+    if(!ObjectId.isValid(req.params.id)){
+        return res.status(400).json('Operação excluir: id obrigatório!');
+    }
+
+    const objectId = new ObjectId(req.params.id);
+
+    try {
+        await clienteDao.Excluir(objectId);
+        res.status(200).json("Sucesso ao excluir cliente!");
+    } catch (error) {
+        console.error('Erro ao excluir cliente:', error);
+        res.status(500).send('Erro ao excluir cliente!');
     }
 }
